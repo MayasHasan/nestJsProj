@@ -11,15 +11,15 @@ export class SongsService {
         return this.songs
     }
     findOne(id) {
-        this.songs.find(x => x.id == id)
+
+        return this.songs.find(x => x.id == id)
     }
-    update(id) {
-        console.log(id, "IIDD")
+    update(id, name) {
         const a = this.songs.find(x => x.id == id)
-        a.id = id;
+        a.name = name;
         return a
     }
-    delete() {
-        return "Delete songs by id"
+    delete(id) {
+        return this.songs.filter(x => x.id != id)
     }
 }

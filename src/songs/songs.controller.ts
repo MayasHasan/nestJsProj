@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { SongsService } from './songs.service';
+import { CreateSongDto } from './dto/create-song-dto';
 
 @Controller('songs')
 export class SongsController {
@@ -8,26 +9,31 @@ export class SongsController {
     ) { }
     @Get()
     findAll() {
-        return this.SongsService.findAll()
+        try {
+            return this.SongsService.findAll()
+        } catch (error) {
+            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); //  {  "statusCode": 403,"message": "Forbidden"}  النتيجة
+
+        }                                                              
     }
 
     @Get(':id')
-    findOne() {
-        return this.SongsService.findOne("id")
+    findOne(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number) {
+        return this.SongsService.findOne(id)
     }
 
     @Post()
-    create() {
-        return this.SongsService.create({ id: 1, name: "Hello" })
+    create(@Body() createSongDto: CreateSongDto) {
+        return this.SongsService.create(createSongDto)
     }
 
 
     @Put(':id')
-    update(@Query('id') id) {
-        return this.SongsService.update("id")
+    update(@Param('id') id, @Body() songDto: any) {
+        return this.SongsService.update(id, songDto.name)
     }
     @Delete(':id')
-    delete() {
-        return "Delete songs by id"
+    delete(@Param('id') id) {
+        return this.SongsService.delete(id)
     }
 }
